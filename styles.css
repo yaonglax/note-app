@@ -1,0 +1,155 @@
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    overflow: hidden;
+    height: 100svh;
+    width: 100vw;
+    position: relative;
+}
+.bg {
+    position: relative;
+}
+.bg:before {
+    content: ' ';
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    opacity: 0.2;
+    background-image: url('dotted.png');
+    
+}
+
+.header {
+    width: 100%;
+    height: 3vw;
+    background-color: white;
+    border-bottom: 1px solid #808080;
+    position: fixed;
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: 20px;
+    z-index: 2;
+    justify-content: space-between;
+}
+
+.header > h2 {
+font-size: 2.2rem;
+}
+.main {
+    height: 100vh;
+    width: 100vw;
+    position: relative;
+}
+#openModal {
+    border: none;
+    background-color: transparent;
+    background-image: url("plus.png");
+    width: 25px;
+    height: 25px;
+    background-size: contain;
+    cursor: pointer;
+}
+#openModal:active {
+    transform: scale(0.7);
+}
+
+.note {
+    width: 300px;
+    height: 150px;
+    position: absolute;
+    border-radius: 0.5rem;
+    border: 1px solid black;
+    cursor: grab;
+}
+
+.note > p {
+    padding: 10px;
+}
+.note > p:first-of-type {
+    font-weight: 700;
+    font-size: 1.3rem;
+}
+
+.modal-window {
+    position: absolute;
+    top: 3vw;
+    right: 1%;
+    width: 300px;
+    height: 320px;
+    background-color: white;
+    border: 1px solid grey;
+    border-top: 0;
+    display: none;
+}
+
+.modal-window > input[type="text"] {
+    margin-top: 20px;
+    margin-left: 20px;
+    outline: 0;
+    border-width: 0 0 2px;
+    border-color: gray;
+    height: 1.8rem;
+    width: 250px;
+    font-size: 1.5rem;
+}
+.modal-window > input[type="text"]::placeholder {
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+textarea {
+    margin-top: 20px;
+    resize: none;
+    margin-left: 20px;
+    height: 150px;
+    width: 250px;
+    outline: 0;
+    font-size: 1.2rem;
+    border: 1px solid grey;
+    border-radius: 0.2rem;
+}
+.modal-window > h2 {
+    padding: 20px 0px 0px 20px;
+}
+
+#createNote {
+    background-color: transparent;
+    border: 1px solid grey;
+    border-radius: 0.2rem;
+    color: gray;
+    position: absolute;
+    width: 60px;
+    height: 25px;
+    right: 10%;
+    bottom: 5%;
+    cursor: pointer;
+}
+
+#deleteBtn {
+    background-image: url('cross.png');
+    right: 3%;
+}
+#editBtn {
+    background-image: url('pencil.png');
+    right: 15%;
+}
+#deleteBtn, #editBtn {
+    width: 20px;
+    height: 20px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: transparent;
+    border: none;
+    position: absolute;
+    top: 3%;
+    cursor: pointer;
+}
