@@ -37,7 +37,7 @@ body {
     align-items: center;
     margin: 0;
     padding: 20px;
-    z-index: 2;
+    z-index: 200;
     justify-content: space-between;
 }
 
@@ -77,6 +77,7 @@ font-size: 2.2rem;
 .note > p:first-of-type {
     font-weight: 700;
     font-size: 1.3rem;
+    padding-top: 20px;
 }
 
 .modal-window {
@@ -133,6 +134,14 @@ textarea {
     cursor: pointer;
 }
 
+#createNote:hover {
+    background-color: grey;
+    color: white;
+}
+#createNote:active {
+    transform: scale(0.9);
+}
+
 #deleteBtn {
     background-image: url('cross.png');
     right: 3%;
@@ -152,4 +161,20 @@ textarea {
     position: absolute;
     top: 3%;
     cursor: pointer;
+}
+
+@media only screen and (max-width: 768px) {
+    .modal-window {
+        border: 1px solid gray;
+        top: 15vw;
+        left: 10%;
+    }
+    .note {
+        height: auto;
+        width: 200px;
+    }
+    #deleteBtn, #editBtn {
+        width: 18px;
+        height: 18px;
+    }
 }

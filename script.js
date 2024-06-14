@@ -19,9 +19,7 @@ const renderNotes = () => {
     mainContainer.innerHTML = allNotes;
     notes.forEach(note => {
         const noteElement = document.getElementById(`note-${note.id}`);
-        noteElement.onmousedown = (e) => {
-            noteElement.style.zIndex +=100;
-            moveNoteStart(e, note.id);}
+        addNoteEventListeners(noteElement, note.id);
     });
 };
 
@@ -54,7 +52,6 @@ const createNote = () => {
 };
 
 const deleteNote = (id) => {
-    
     modalWindow.style.display = "none";
     notes = notes.filter((note) => note.id !== id);
     localStorage.setItem('notes', JSON.stringify(notes));
@@ -84,7 +81,6 @@ const editNote = (id) => {
         createBtn.addEventListener("click", createNote);
         openModal.disabled = false;
     });
-
 };
 
 const openModalWindow = () => {
@@ -95,45 +91,52 @@ const openModalWindow = () => {
 openModal.addEventListener("click", openModalWindow);
 createBtn.addEventListener("click", createNote);
 
-
-
 const moveNoteStart = (e, id) => {
-    // Находим элемент заметки по его id
     const noteToMove = document.getElementById(`note-${id}`);
-   
-    // Находим объект заметки в массиве notes по его id
     const note = notes.find(note => note.id === id);
-
-    // Получаем текущие координаты заметки на странице
     const coords = getCoords(noteToMove);
-    
-    // Рассчитываем сдвиг курсора относительно верхнего левого угла заметки
     const shiftX = e.pageX - coords.left;
     const shiftY = e.pageY - coords.top;
 
-    // Функция moveAt будет вызываться при перемещении мыши
     const moveAt = (e) => {
-        // Устанавливаем новое положение заметки
-        noteToMove.style.left = e.pageX - shiftX + 'px';
-        noteToMove.style.top = e.pageY - shiftY + 'px';
+        let newLeft = e.pageX - shiftX;
+        let newTop = e.pageY - shiftY;
+
+        const screenWidth = document.documentElement.clientWidth;
+        const screenHeight = document.documentElement.clientHeight;
+        const noteWidth = noteToMove.offsetWidth;
+        const noteHeight = noteToMove.offsetHeight;
+
+        if (newLeft < 0) newLeft = 0;
+        if (newTop < 0) newTop = 0;
+        if (newLeft + noteWidth > screenWidth) newLeft = screenWidth - noteWidth;
+        if (newTop + noteHeight > screenHeight) newTop = screenHeight - noteHeight;
+
+        noteToMove.style.left = newLeft + 'px';
+        noteToMove.style.top = newTop + 'px';
     };
 
-    // Устанавливаем обработчик события перемещения мыши на всем документе
-    document.onmousemove = (e) => moveAt(e);
+    const onMouseMove = (e) => moveAt(e);
+    const onTouchMove = (e) => moveAt(e.touches[0]);
 
-    // Устанавливаем обработчик события отпускания кнопки мыши на заметке
-    noteToMove.onmouseup = () => {
-        // При отпускании кнопки мыши удаляем обработчики событий
-        document.onmousemove = null;
-        noteToMove.onmouseup = null;
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('touchmove', onTouchMove);
+
+    const stopMove = () => {
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('touchmove', onTouchMove);
+        document.removeEventListener('mouseup', stopMove);
+        document.removeEventListener('touchend', stopMove);
+
         noteToMove.style.zIndex = 0;
-        // Обновляем координаты заметки в объекте note и сохраняем в localStorage
         note.side = noteToMove.style.left;
         note.top = noteToMove.style.top;
         localStorage.setItem('notes', JSON.stringify(notes));
     };
 
-    // Отменяем браузерный drag-and-drop для заметки
+    document.addEventListener('mouseup', stopMove);
+    document.addEventListener('touchend', stopMove);
+
     noteToMove.ondragstart = () => false;
 };
 
@@ -145,6 +148,38 @@ const getCoords = (elem) => {
     };
 };
 
+const addNoteEventListeners = (noteElement, noteId) => {
+    noteElement.onmousedown = (e) => {
+        noteElement.style.zIndex += 100;
+        moveNoteStart(e, noteId);
+    };
 
+    noteElement.ontouchstart = (e) => {
+        noteElement.style.zIndex += 100;
+        const touch = e.touches[0];
+        const startX = touch.pageX;
+        const startY = touch.pageY;
+
+        const touchMoveHandler = (moveEvent) => {
+            const moveTouch = moveEvent.touches[0];
+            const moveX = moveTouch.pageX;
+            const moveY = moveTouch.pageY;
+
+            const distanceX = Math.abs(moveX - startX);
+            const distanceY = Math.abs(moveY - startY);
+
+            if (distanceX > 10 || distanceY > 10) {
+                moveNoteStart(touch, noteId);
+                noteElement.removeEventListener('touchmove', touchMoveHandler);
+            }
+        };
+
+        noteElement.addEventListener('touchmove', touchMoveHandler);
+
+        noteElement.ontouchend = () => {
+            noteElement.removeEventListener('touchmove', touchMoveHandler);
+        };
+    };
+};
 
 renderNotes();
