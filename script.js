@@ -92,22 +92,15 @@ openModal.addEventListener("click", openModalWindow);
 createBtn.addEventListener("click", createNote);
 
 const moveNoteStart = (e, id) => {
-    // Получаем элемент заметки, которую хотим переместить
     const noteToMove = document.getElementById(`note-${id}`);
-    // Находим объект заметки в массиве notes по её id
     const note = notes.find(note => note.id === id);
-    // Получаем текущие координаты заметки
     const coords = getCoords(noteToMove);
     // Вычисляем смещение от курсора мыши до верхнего левого угла заметки
     const shiftX = e.pageX - coords.left;
     const shiftY = e.pageY - coords.top;
-
-    // Функция, которая перемещает заметку
     const moveAt = (e) => {
         let newLeft = e.pageX - shiftX;
         let newTop = e.pageY - shiftY;
-
-        // Получаем размеры экрана и размеры заметки
         const screenWidth = document.documentElement.clientWidth;
         const screenHeight = document.documentElement.clientHeight;
         const noteWidth = noteToMove.offsetWidth;
@@ -119,40 +112,28 @@ const moveNoteStart = (e, id) => {
         if (newLeft + noteWidth > screenWidth) newLeft = screenWidth - noteWidth;
         if (newTop + noteHeight > screenHeight) newTop = screenHeight - noteHeight;
 
-        // Устанавливаем новые координаты заметки
         noteToMove.style.left = newLeft + 'px';
         noteToMove.style.top = newTop + 'px';
     };
 
-    // Обработчики событий для перемещения заметки
     const onMouseMove = (e) => moveAt(e);
     const onTouchMove = (e) => moveAt(e.touches[0]);
-
-    // Добавляем обработчики событий для перемещения заметки при движении мыши или прикосновении
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('touchmove', onTouchMove);
 
     // Функция, вызываемая при отпускании кнопки мыши или окончании прикосновения
     const stopMove = () => {
-        // Удаляем обработчики событий для перемещения заметки
         document.removeEventListener('mousemove', onMouseMove);
         document.removeEventListener('touchmove', onTouchMove);
         document.removeEventListener('mouseup', stopMove);
         document.removeEventListener('touchend', stopMove);
-
-        // Сбрасываем z-index и сохраняем новые координаты заметки в объекте note
         noteToMove.style.zIndex = 0;
         note.side = noteToMove.style.left;
         note.top = noteToMove.style.top;
-        // Сохраняем изменения в localStorage
         localStorage.setItem('notes', JSON.stringify(notes));
     };
-
-    // Добавляем обработчики событий для отпускания кнопки мыши или прикосновения
     document.addEventListener('mouseup', stopMove);
     document.addEventListener('touchend', stopMove);
-
-    // Отменяем стандартное поведение браузера для события ondragstart (чтобы избежать нежелательного поведения)
     noteToMove.ondragstart = () => false;
 };
 
@@ -166,26 +147,23 @@ const getCoords = (elem) => {
 };
 
 const addNoteEventListeners = (noteElement, noteId) => {
-    // Обработчик события для начала перемещения заметки при клике мышью
     noteElement.onmousedown = (e) => {
-        noteElement.style.zIndex += 100; // Устанавливаем z-index, чтобы заметка оказалась выше остальных
-        moveNoteStart(e, noteId); // Вызываем функцию для начала перемещения заметки
+        noteElement.style.zIndex += 100; 
+        moveNoteStart(e, noteId); 
     };
 
     // Обработчик события для начала перемещения заметки прикосновением на сенсорном устройстве
     noteElement.ontouchstart = (e) => {
-        noteElement.style.zIndex += 100; // Устанавливаем z-index, чтобы заметка оказалась выше остальных
+        noteElement.style.zIndex += 100; 
         const touch = e.touches[0]; // Получаем информацию о первом прикосновении
-        const startX = touch.pageX; // Запоминаем начальную координату X
-        const startY = touch.pageY; // Запоминаем начальную координату Y
+        const startX = touch.pageX; 
+        const startY = touch.pageY;
 
-        // Обработчик движения прикосновения
         const touchMoveHandler = (moveEvent) => {
-            const moveTouch = moveEvent.touches[0]; // Получаем информацию о движении первого прикосновения
-            const moveX = moveTouch.pageX; // Получаем текущую координату X при движении
-            const moveY = moveTouch.pageY; // Получаем текущую координату Y при движении
-
-            // Вычисляем расстояние, на которое сместилось прикосновение
+            const moveTouch = moveEvent.touches[0]; 
+            const moveX = moveTouch.pageX; 
+            const moveY = moveTouch.pageY; 
+            
             const distanceX = Math.abs(moveX - startX);
             const distanceY = Math.abs(moveY - startY);
 
